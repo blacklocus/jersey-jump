@@ -1,0 +1,137 @@
+group = 'com.blacklocus'
+version = '1.0-SNAPSHOT'
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+    }
+}
+apply plugin: 'fatjar'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // server components
+    compile 'com.sun.jersey:jersey-server:1.13'
+    compile 'com.sun.jersey:jersey-servlet:1.13'
+    compile 'com.sun.jersey:jersey-core:1.13'
+    compile 'com.sun.jersey:jersey-json:1.13'
+
+    // embedded jetty libs
+    compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106'
+    compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106'
+
+    compile 'org.codehaus.jackson:jackson-core-asl:1.9.12'
+    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.12'
+
+    // utility components
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'commons-io:commons-io:2.2'
+    compile 'com.google.guava:guava:14.0.1'
+    compile 'com.github.dirkraft:props-live:1.0.4'
+
+    // logging components
+    compile 'ch.qos.logback:logback-classic:1.0.9'
+    compile 'ch.qos.logback:logback-core:1.0.9'
+    compile 'org.codehaus.groovy:groovy:1.8.3'
+
+    // test components
+    testCompile 'junit:junit:4.11'
+
+}
+
+
+
+/** Function always returns a new manifest that can be customized */
+def defaultManifest() {
+    return manifest{
+        def git_cmd = "git rev-parse HEAD"
+        def git_proc = git_cmd.execute()
+        attributes 'SCM-Revision': git_proc.text.trim()
+        attributes 'Timestamp': String.valueOf(System.currentTimeMillis())
+        attributes 'Build-Host': InetAddress.localHost.hostName
+    }
+}
+
+jar {
+    manifest = defaultManifest()
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+    manifest = defaultManifest()
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+    manifest = defaultManifest()
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    enabled = false // by default
+    repositories.mavenDeployer {
+        // only necessary for staging/release
+        beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+
+        repository(
+                // for snapshots
+                url: "https://oss.sonatype.org/content/repositories/snapshots/"
+                // for staging/release
+//                    url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        ) {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        pom.project {
+            name 'jersey-jump'
+            description "Let's see what this becomes."
+            url 'https://github.com/blacklocus/jersey-jump'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                url 'scm:https://github.com/blacklocus/jersey-jump.git'
+                connection 'scm:git://github.com/blacklocus/jersey-jump.git'
+                developerConnection 'scm:git@github.com:blacklocus/jersey-jump.git'
+            }
+            developers {
+                developer {
+                    id 'dirkraft'
+                    name 'Jason Dunkelberger'
+                }
+            }
+        }
+    }
+}
+
