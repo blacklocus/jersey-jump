@@ -1,10 +1,17 @@
 jersey-jump
-=========
+===========
 
 A jump start module for creating webapp modules. build.gradle:
 
+    repositories {
+        maven {
+            name = 'sonatype-snapshots'
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+
     dependencies {
-        compile 'com.blacklocus:jersey-jump:1.0'
+        compile 'com.blacklocus:jersey-jump:1.0-SNAPSHOT'
     }
 
 To generate an all-in-one fat jar, add this to your module's build.gradle:
