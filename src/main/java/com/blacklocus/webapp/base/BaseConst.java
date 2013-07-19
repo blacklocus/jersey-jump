@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class BaseConst {
 
-    public static final String BASE_PKG = "com.blacklocus";
+    public static final String BASE_PKG = "";
 
     public static final ToStringStyle DEFAULT_TO_STRING_STYLE = ToStringStyle.SHORT_PREFIX_STYLE;
 
