@@ -36,7 +36,7 @@ import javax.ws.rs.ApplicationPath;
 public class BasePackagesResourceConfig extends PackagesResourceConfig {
 
     public BasePackagesResourceConfig(@InjectParam JerseyScannerHelper scannerHelper) {
-        this(scannerHelper, BaseConst.BASE_PKG);
+        this(scannerHelper, BaseConst.BASE_PKG == null ? "" : BaseConst.BASE_PKG);
     }
 
     public BasePackagesResourceConfig(final ScannerHelper scannerHelper, String... basePkgs) {

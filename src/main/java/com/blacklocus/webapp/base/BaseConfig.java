@@ -24,6 +24,9 @@ import com.github.dirkraft.propslive.propsrc.PropSourceMap;
 import com.github.dirkraft.propslive.propsrc.PropSourceSysProps;
 import com.github.dirkraft.propslive.propsrc.view.LayeredPropSource;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
+
 /**
  * @author jason
  */
@@ -39,6 +42,15 @@ public class BaseConfig {
             new PropSourceSysProps(), // first check sys props
             DEFAULTS // fall back to coded defaults
     ));
+
+    /**
+     * Base package that will be scanned for instantiable components ({@link Path}, {@link Provider}, ...)
+     */
+    public static final String PROP_BASE_PKG = "base.pkg";
+    private static final String DEF_BASE_PKG = "com"; // all of the things
+    static {
+        DEFAULTS.setString(PROP_BASE_PKG, DEF_BASE_PKG);
+    }
 
     public static final String PROP_JETTY_HOST = "jetty.host";
     private static final String DEF_JETTY_HOST = "0.0.0.0";
