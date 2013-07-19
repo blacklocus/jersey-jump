@@ -46,9 +46,7 @@ dependencies {
     compile 'com.github.dirkraft:props-live:1.0.4'
 
     // logging components
-    compile 'ch.qos.logback:logback-classic:1.0.9'
-    compile 'ch.qos.logback:logback-core:1.0.9'
-    compile 'org.codehaus.groovy:groovy:1.8.3'
+    compile 'org.slf4j:slf4j-api:1.7.2'
 
     // test components
     testCompile 'junit:junit:4.11'
@@ -135,3 +133,7 @@ uploadArchives {
     }
 }
 
+// Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
+task createWrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
