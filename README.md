@@ -25,6 +25,10 @@ To generate an all-in-one fat jar, add this to your module's build.gradle:
         exclude 'META-INF/*.RSA'
     }
 
+If using the gradle application plugin, you'll need to specify the base scan package as the default (scan all)
+won't work across jars. I don't know why this is, but it's pretty annoying.
+
+    export JAVA_OPTS="-Dbase.pkg=com.company"
 
 
 web resources
