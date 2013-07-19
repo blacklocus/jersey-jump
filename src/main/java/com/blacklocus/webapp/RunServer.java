@@ -190,12 +190,12 @@ public class RunServer {
 
         } else {
             File tempDir = FileUtils.getTempDirectory();
-            File keyStoreFile = new File(tempDir, "magnus-keystore.jks");
+            File keyStoreFile = new File(tempDir, "keystore.jks");
             LOG.info("Copying keystore to filesystem: " + keyStoreFile.getAbsolutePath());
             FileUtils.copyInputStreamToFile(keyStoreURL.openStream(), keyStoreFile);
 
             SslContextFactory sslContextFactory = new SslContextFactory(keyStoreFile.getAbsolutePath());
-            sslContextFactory.setKeyStorePassword("BlackLocus");
+            sslContextFactory.setKeyStorePassword("changeit");
 
             // plug it into the SSL channel
             sslChannel = new SslSelectChannelConnector(sslContextFactory);
