@@ -47,7 +47,7 @@ public class BaseConfig {
      * Base package that will be scanned for instantiable components ({@link Path}, {@link Provider}, ...)
      */
     public static final String PROP_BASE_PKG = "base.pkg";
-    private static final String DEF_BASE_PKG = "com"; // all of the things
+    private static final String DEF_BASE_PKG = ""; // all of the things
     static {
         DEFAULTS.setString(PROP_BASE_PKG, DEF_BASE_PKG);
     }
