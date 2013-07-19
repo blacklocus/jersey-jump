@@ -5,15 +5,6 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
-    }
-}
-apply plugin: 'fatjar'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7

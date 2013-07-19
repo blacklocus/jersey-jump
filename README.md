@@ -16,17 +16,28 @@ A jump start module for creating webapp modules. build.gradle:
 
 To generate an all-in-one fat jar, add this to your module's build.gradle:
 
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+        }
+    }
+    apply plugin: 'fatjar'
+
     fatJar {
         classifier = 'fat'
-        manifest = defaultManifest()
         manifest.attributes 'Main-Class': 'com.blacklocus.webapp.RunServer'
         exclude 'META-INF/*.SF'
         exclude 'META-INF/*.DSA'
         exclude 'META-INF/*.RSA'
     }
 
-If using the gradle application plugin, you'll need to specify the base scan package as the default (scan all)
-won't work across jars. I don't know why this is, but it's pretty annoying.
+You'll need to specify the base scan package as the default (scan all) won't work across jars. I don't know why this is,
+but it's pretty annoying.
+
+For fatJar this would be a -D like `-Dbase.pkg=your.company`. For the gradle application plugin, do it through `JAVA_OPTS`:
 
     export JAVA_OPTS="-Dbase.pkg=com.company"
 
