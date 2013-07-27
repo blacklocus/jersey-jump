@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.core.spi.component.ProviderServices;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;

@@ -20,13 +20,11 @@ package com.blacklocus.webapp;
 import com.blacklocus.webapp.app.StaticResourceUTF8CharEncodingFilterHolder;
 import com.blacklocus.webapp.base.BaseConfig;
 import com.blacklocus.webapp.base.BasePackagesResourceConfig;
-import com.github.dirkraft.propslive.core.LivePropSet;
-import com.github.dirkraft.propslive.dynamic.listen.PropChange;
-import com.github.dirkraft.propslive.set.ease.PropsSlice;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.server.impl.resource.SingletonFactory;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
@@ -75,6 +73,8 @@ public class RunServer {
 
     public static Server SERVER;
 
+    // TODO figure out how to replicate property change notification over the property set.
+    private final Configuration propSet = BaseConfig.$;
     /**
      * Through the 'props-live' library, atomically receives updates to all properties in the set:
      * <ul>
@@ -87,33 +87,33 @@ public class RunServer {
      * When a change is made to any of these properties, which directly affect the running Jetty instance, Jetty is
      * restarted with the new settings.
      */
-    private final LivePropSet propSet = new LivePropSet(PROP_STATIC_DIRS, PROP_JETTY_HOST, PROP_JETTY_PORT,
-            PROP_JETTY_PORT_SSL, PROP_RESTART_TRIGGER) {
-        {
-            // Init with current values and subscribe to changes.
-            $.to(this).getVals(this);
-        }
-
-        /** Reload cannot happen in the same thread as one serving a request. */
-        final ExecutorService jettyStopForRestartExecutor = new ThreadPoolExecutor(0, 1, 5, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(5));
-
-        @Override
-        public void reload(PropChange<PropsSlice> values) {
-            jettyStopForRestartExecutor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // This will automatically recover and restart, which will look up fresh config.
-                        // accomplished by run() { while (!Thread.interrupted()) ...
-                        SERVER.stop();
-                    } catch (Exception e) {
-                        LOG.error("Critical error: Exception restarting the server.", e);
-                    }
-                }
-            });
-        }
-    };
+//    private final LivePropSet propSet = new LivePropSet(PROP_STATIC_DIRS, PROP_JETTY_HOST, PROP_JETTY_PORT,
+//            PROP_JETTY_PORT_SSL, PROP_RESTART_TRIGGER) {
+//        {
+//            // Init with current values and subscribe to changes.
+//            $.to(this).getVals(this);
+//        }
+//
+//        /** Reload cannot happen in the same thread as one serving a request. */
+//        final ExecutorService jettyStopForRestartExecutor = new ThreadPoolExecutor(0, 1, 5, TimeUnit.SECONDS,
+//                new ArrayBlockingQueue<Runnable>(5));
+//
+//        @Override
+//        public void reload(PropChange<PropsSlice> values) {
+//            jettyStopForRestartExecutor.submit(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        // This will automatically recover and restart, which will look up fresh config.
+//                        // accomplished by run() { while (!Thread.interrupted()) ...
+//                        SERVER.stop();
+//                    } catch (Exception e) {
+//                        LOG.error("Critical error: Exception restarting the server.", e);
+//                    }
+//                }
+//            });
+//        }
+//    };
 
     private final Class<? extends BasePackagesResourceConfig> prcCls;
 

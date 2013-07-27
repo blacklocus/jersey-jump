@@ -23,7 +23,7 @@ import com.blacklocus.webapp.app.scan.JerseyScannerHelper;
 import com.blacklocus.webapp.app.scan.ScannerHelper;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.api.core.PackagesResourceConfig;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle;
 

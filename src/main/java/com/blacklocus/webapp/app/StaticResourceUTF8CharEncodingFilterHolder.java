@@ -17,7 +17,7 @@
 
 package com.blacklocus.webapp.app;
 
-import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang.CharEncoding;
 import org.eclipse.jetty.servlet.FilterHolder;
 
 import javax.servlet.Filter;

@@ -17,29 +17,29 @@
 
 package com.blacklocus.webapp.base;
 
-import com.github.dirkraft.propslive.Props;
-import com.github.dirkraft.propslive.PropsImpl;
-import com.github.dirkraft.propslive.dynamic.DynamicPropsSets;
-import com.github.dirkraft.propslive.propsrc.PropSourceMap;
-import com.github.dirkraft.propslive.propsrc.PropSourceSysProps;
-import com.github.dirkraft.propslive.propsrc.view.LayeredPropSource;
+import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.configuration.SystemConfiguration;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * @author jason
  */
 public class BaseConfig {
 
-    /** Sort of a registry of default valueS */
-    public static final Props DEFAULTS = new PropsImpl(new PropSourceMap("default prop values"));
+    /** Sort of a registry of default values */
+    public static final Configuration DEFAULTS = new MapConfiguration(new HashMap<String, Object>());
     /**
      * The primary property lookup source. First checks system properties. If not found falls back to registered
      * {@link #DEFAULTS}.
      */
-    public static final DynamicPropsSets $ = new DynamicPropsSets(new LayeredPropSource(
-            new PropSourceSysProps(), // first check sys props
+    public static final Configuration $ = new CompositeConfiguration(Arrays.asList(
+            new SystemConfiguration(), // first check sys props
             DEFAULTS // fall back to coded defaults
     ));
 
@@ -49,13 +49,13 @@ public class BaseConfig {
     public static final String PROP_BASE_PKG = "base.pkg";
     private static final String DEF_BASE_PKG = ""; // all of the things
     static {
-        DEFAULTS.setString(PROP_BASE_PKG, DEF_BASE_PKG);
+        DEFAULTS.setProperty(PROP_BASE_PKG, DEF_BASE_PKG);
     }
 
     public static final String PROP_JETTY_HOST = "jetty.host";
     private static final String DEF_JETTY_HOST = "0.0.0.0";
     static {
-        DEFAULTS.setString(PROP_JETTY_HOST, DEF_JETTY_HOST);
+        DEFAULTS.setProperty(PROP_JETTY_HOST, DEF_JETTY_HOST);
     }
 
     /**
@@ -65,13 +65,13 @@ public class BaseConfig {
     public static final String PROP_JETTY_PORT = "jetty.port";
     private static final int DEF_JETTY_PORT = 8080;
     static {
-        DEFAULTS.setInt(PROP_JETTY_PORT, DEF_JETTY_PORT);
+        DEFAULTS.setProperty(PROP_JETTY_PORT, DEF_JETTY_PORT);
     }
 
     public static final String PROP_JETTY_PORT_SSL = "jetty.port.ssl";
     private static final int DEF_JETTY_PORT_SSL = 8443;
     static {
-        DEFAULTS.setInt(PROP_JETTY_PORT_SSL, DEF_JETTY_PORT_SSL);
+        DEFAULTS.setProperty(PROP_JETTY_PORT_SSL, DEF_JETTY_PORT_SSL);
     }
 
     /**
@@ -82,7 +82,7 @@ public class BaseConfig {
     public static final String PROP_RESTART_TRIGGER = "jetty.restart";
     private static final int DEF_RESTART_TRIGGER = 0;
     static {
-        DEFAULTS.setInt(PROP_RESTART_TRIGGER, DEF_RESTART_TRIGGER);
+        DEFAULTS.setProperty(PROP_RESTART_TRIGGER, DEF_RESTART_TRIGGER);
     }
 
     /**

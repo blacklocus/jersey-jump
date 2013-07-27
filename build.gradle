@@ -32,12 +32,12 @@ dependencies {
 
     // utility components
     compile 'commons-lang:commons-lang:2.6'
-    compile 'commons-io:commons-io:2.2'
+    compile 'commons-io:commons-io:2.4'
+    compile 'commons-configuration:commons-configuration:1.9'
     compile 'com.google.guava:guava:14.0.1'
-    compile 'com.github.dirkraft:props-live:1.0.5'
 
     // logging components
-    compile 'org.slf4j:slf4j-api:1.7.2'
+    compile 'org.slf4j:slf4j-api:1.7.5'
 
     // test components
     testCompile 'junit:junit:4.11'

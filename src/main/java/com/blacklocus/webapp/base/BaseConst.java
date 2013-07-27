@@ -17,7 +17,8 @@
 
 package com.blacklocus.webapp.base;
 
-import org.apache.commons.lang3.builder.ToStringStyle;
+
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import static com.blacklocus.webapp.base.BaseConfig.$;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_BASE_PKG;
