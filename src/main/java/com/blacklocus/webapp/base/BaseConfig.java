@@ -160,4 +160,12 @@ public class BaseConfig {
      */
     public static final String PROP_STATIC_DIRS = "base.static_dirs";
 
+    /**
+     * Password of keystore, if attempting to use SSL. Defaults to "changeit".
+     */
+    public static final String PROP_KEYSTORE_PW = "base.keystore.password";
+    public static final String DEF_KEYSTORE_PW = "changeit";
+    static {
+        DEFAULTS.setProperty(PROP_KEYSTORE_PW, DEF_KEYSTORE_PW);
+    }
 }

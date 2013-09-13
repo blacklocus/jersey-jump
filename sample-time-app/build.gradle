@@ -1,0 +1,21 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sonatype-snapshots'
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+}
+
+dependencies {
+    compile project(':')
+
+    compile 'org.apache.httpcomponents:httpclient:4.2.2'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.slf4j:slf4j-simple:1.7.5'
+
+}

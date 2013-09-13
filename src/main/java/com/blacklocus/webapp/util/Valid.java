@@ -15,7 +15,7 @@
  *
  */
 
-package com.blacklocus.webapp.stuff;
+package com.blacklocus.webapp.util;
 
 import com.blacklocus.webapp.base.BaseWebApplicationException;
 
