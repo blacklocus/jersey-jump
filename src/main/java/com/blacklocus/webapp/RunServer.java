@@ -52,9 +52,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 
+import static com.blacklocus.webapp.base.BaseConfig.$;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_JETTY_HOST;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_JETTY_PORT;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_JETTY_PORT_SSL;
+import static com.blacklocus.webapp.base.BaseConfig.PROP_KEYSTORE_PW;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_STATIC_DIRS;
 
 /**
@@ -169,7 +171,7 @@ public class RunServer extends ExceptingRunnable {
             FileUtils.copyInputStreamToFile(keyStoreURL.openStream(), keyStoreFile);
 
             SslContextFactory sslContextFactory = new SslContextFactory(keyStoreFile.getAbsolutePath());
-            sslContextFactory.setKeyStorePassword("changeit");
+            sslContextFactory.setKeyStorePassword($.getString(PROP_KEYSTORE_PW));
 
             // plug it into the SSL channel
             sslChannel = new SslSelectChannelConnector(sslContextFactory);
