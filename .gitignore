@@ -1,6 +1,6 @@
 #java specific
 *.class
-.gradle/*
+.gradle/
 
 bin*
 build/
