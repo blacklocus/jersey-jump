@@ -30,11 +30,11 @@ import javax.ws.rs.core.Response;
 public class Valid {
 
     /**
-     * @param condition which if failed will trigger a 404 exception
+     * @param condition which if failed will trigger a 400 exception
      * @param failureMessage detailing the fault
      * @throws WebApplicationException if the condition fails
      */
-    public static void $404(boolean condition, String failureMessage) throws WebApplicationException {
+    public static void $400(boolean condition, String failureMessage) throws WebApplicationException {
         if (!condition) throw new BaseWebApplicationException(Response.Status.BAD_REQUEST, failureMessage);
     }
 }
