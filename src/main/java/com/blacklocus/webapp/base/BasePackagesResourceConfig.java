@@ -17,13 +17,9 @@
 
 package com.blacklocus.webapp.base;
 
-import com.blacklocus.webapp.RunServer;
-import com.blacklocus.webapp.app.StartupListener;
 import com.blacklocus.webapp.app.JerseyScannerHelper;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.api.core.PackagesResourceConfig;
-import org.eclipse.jetty.util.component.AbstractLifeCycle;
-import org.eclipse.jetty.util.component.LifeCycle;
 
 import javax.ws.rs.ApplicationPath;
 
@@ -43,18 +39,9 @@ public class BasePackagesResourceConfig extends PackagesResourceConfig {
     }
 
     public BasePackagesResourceConfig(final JerseyScannerHelper scannerHelper, String... basePkgs) {
-        super(combine(new String[] {
+        super(combine(new String[]{
                 "org.codehaus.jackson.jaxrs" // json serialization
         }, basePkgs));
-        // Support for initialization after context building but before serving requests.
-        RunServer.SERVER.getHandler().addLifeCycleListener(new AbstractLifeCycle.AbstractLifeCycleListener() {
-            @Override
-            public void lifeCycleStarted(LifeCycle event) {
-                for (StartupListener startupListener : scannerHelper.findImplementing(StartupListener.class)) {
-                    startupListener.onStartup();
-                }
-            }
-        });
     }
 
     protected static String[] combine(String pkg, String... moar) {
