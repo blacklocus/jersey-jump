@@ -23,6 +23,8 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * Apparently required for Jackson to be correctly integrated. TODO what does this do? Thanks enterprise java.
+ *
+ * @author Jason Dunkelberger (dirkraft)
  */
 @Provider
 public class DefaultMessageBodyWriter extends JacksonJsonProvider {

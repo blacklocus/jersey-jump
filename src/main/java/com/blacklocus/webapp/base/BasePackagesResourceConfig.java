@@ -17,8 +17,6 @@
 
 package com.blacklocus.webapp.base;
 
-import com.blacklocus.webapp.app.JerseyScannerHelper;
-import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 
 import javax.ws.rs.ApplicationPath;
@@ -34,11 +32,11 @@ import static com.blacklocus.webapp.base.BaseConfig.PROP_BASE_PKG;
 @ApplicationPath("/*")
 public class BasePackagesResourceConfig extends PackagesResourceConfig {
 
-    public BasePackagesResourceConfig(@InjectParam JerseyScannerHelper scannerHelper) {
-        this(scannerHelper, $.getString(PROP_BASE_PKG));
+    public BasePackagesResourceConfig() {
+        this($.getString(PROP_BASE_PKG));
     }
 
-    public BasePackagesResourceConfig(final JerseyScannerHelper scannerHelper, String... basePkgs) {
+    public BasePackagesResourceConfig(String... basePkgs) {
         super(combine(new String[]{
                 "org.codehaus.jackson.jaxrs" // json serialization
         }, basePkgs));

@@ -23,6 +23,7 @@ import com.blacklocus.webapp.base.BasePackagesResourceConfig;
 import com.blacklocus.webapp.util.ExceptingRunnable;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.server.impl.resource.SingletonFactory;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
@@ -107,6 +108,7 @@ public class RunServer extends ExceptingRunnable {
         jerseyFilter.setName(prcCls.getName());
         jerseyFilter.setInitParameter(ServletContainer.APPLICATION_CONFIG_CLASS, prcCls.getCanonicalName());
         jerseyFilter.setInitParameter(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, $.getString(PROP_STATIC_CONTENT_REGEX));
+        jerseyFilter.setInitParameter(ResourceConfig.PROPERTY_DEFAULT_RESOURCE_COMPONENT_PROVIDER_FACTORY_CLASS, SingletonFactory.class.getCanonicalName());
         jerseyFilter.setInitParameter(ResourceConfig.FEATURE_DISABLE_WADL, "true");
         jerseyFilter.setInitParameter(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
 

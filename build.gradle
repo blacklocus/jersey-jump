@@ -18,10 +18,10 @@ repositories {
 dependencies {
 
     // server components
-    compile 'com.sun.jersey:jersey-server:1.13'
-    compile 'com.sun.jersey:jersey-servlet:1.13'
-    compile 'com.sun.jersey:jersey-core:1.13'
-    compile 'com.sun.jersey:jersey-json:1.13'
+    compile 'com.sun.jersey:jersey-server:1.17.1'
+    compile 'com.sun.jersey:jersey-servlet:1.17.1'
+    compile 'com.sun.jersey:jersey-core:1.17.1'
+    compile 'com.sun.jersey:jersey-json:1.17.1'
 
     // embedded jetty libs
     compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106'
