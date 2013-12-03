@@ -19,12 +19,19 @@ package com.blacklocus.webapp.base;
 
 import org.apache.commons.lang.CharEncoding;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- * @author jason
+ * {@link Path @Path}-annotated resources that extend this class will be guaranteed to produce as <code>Content-Type:
+ * {@value #JSON_CONTENT_TYPE}</code>
+ *
+ * @author Jason Dunkelberger (dirkraft)
  */
-@Produces(MediaType.APPLICATION_JSON + ";charset=" + CharEncoding.UTF_8)
+@Produces(BaseJsonResource.JSON_CONTENT_TYPE)
 public abstract class BaseJsonResource {
+
+    public static final String JSON_CONTENT_TYPE = MediaType.APPLICATION_JSON + ";charset=" + CharEncoding.UTF_8;
+
 }

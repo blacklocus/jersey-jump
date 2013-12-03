@@ -23,7 +23,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 /**
- * static methods to help validate request parameters
+ * Static methods to help validate request parameters. An json-serialization-friendly exception will be thrown
+ * if a validation condition fails.
  *
  * @author Jason Dunkelberger (dirkraft)
  */

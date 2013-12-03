@@ -29,6 +29,9 @@ import javax.servlet.ServletResponse;
 import java.io.IOException;
 
 /**
+ * Ensures that static resources are all served with UTF-8 encoding, and so assumes all such textual resources are
+ * <em>actually</em> UTF-8.
+ *
  * @author Jason Dunkelberger (dirkraft)
  */
 public class StaticResourceUTF8CharEncodingFilterHolder extends FilterHolder {

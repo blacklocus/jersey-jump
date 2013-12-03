@@ -23,6 +23,12 @@ import org.codehaus.jackson.map.ObjectMapper;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Registers {@link DefaultObjectMapper} as the default {@link ContextResolver} which supplies the
+ * {@link DefaultObjectMapper}. TODO what does this really do? Thanks enterprise java.
+ *
+ * @author Jason Dunkelberger (dirkraft)
+ */
 @Provider
 public class DefaultContextResolver implements ContextResolver<ObjectMapper> {
 

@@ -18,8 +18,11 @@
 package com.blacklocus.webapp.app;
 
 /**
-* @author jason
-*/
+ * Marker interface where reachable singleton resources of this type instantiated on startup will have their
+ * {@link #onStartup()} invoked.
+ *
+ * @author JerseyScannerHelper
+ */
 public interface StartupListener {
     /**
      * Initialization that should occur after singleton instantiation.

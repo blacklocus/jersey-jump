@@ -21,6 +21,9 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Apparently required for Jackson to be correctly integrated. TODO what does this do? Thanks enterprise java.
+ */
 @Provider
 public class DefaultMessageBodyWriter extends JacksonJsonProvider {
 }

@@ -15,7 +15,7 @@
  *
  */
 
-package com.blacklocus.webapp.app.scan;
+package com.blacklocus.webapp.app;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -38,10 +38,10 @@ import static java.lang.String.format;
  * (see {@link #findImplementing(Class, String...)}). Jersey sort of keeps a "bean registry" like Spring
  * does, but not really. This is a pretty rough search, but I think it works given all the constructor args.
  *
- * @author jason
+ * @author Jason Dunkelberger (dirkraft)
  */
 @Provider
-public class JerseyScannerHelper implements ScannerHelper {
+public class JerseyScannerHelper {
 
     private final ResourceConfig resourceConfig;
     private final ResourceContext resourceContext;

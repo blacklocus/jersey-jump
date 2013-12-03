@@ -17,6 +17,7 @@
 
 package com.blacklocus.webapp.app;
 
+import com.blacklocus.webapp.base.BaseJsonResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ import java.lang.Override;import java.lang.Throwable;import static javax.ws.rs.c
 
 /**
  * Ensures that all exceptions are converted to json. {@link WebApplicationException}s will be left alone except for
- * ensuring that they come out as json.
+ * ensuring that they come out as json. All other exceptions will be serialized per {@link DefaultObjectMapper}.
  *
  * @author Jason Dunkelberger (dirkraft)
  */
@@ -49,6 +50,6 @@ public class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
             LOG.warn("Internal server error (500)", exception);
             builder = Response.status(500).entity(exception);
         }
-        return builder.type(MediaType.APPLICATION_JSON_TYPE).build();
+        return builder.type(BaseJsonResource.JSON_CONTENT_TYPE).build();
     }
 }

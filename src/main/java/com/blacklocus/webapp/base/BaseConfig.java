@@ -17,6 +17,8 @@
 
 package com.blacklocus.webapp.base;
 
+import com.blacklocus.webapp.RunServer;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
@@ -28,7 +30,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * @author jason
+ * Various configurable properties and registered default values for properties that have them.
+ *
+ * @author Jason Dunkelberger (dirkraft)
  */
 public class BaseConfig {
 
@@ -37,11 +41,22 @@ public class BaseConfig {
     /**
      * The primary property lookup source. First checks system properties. If not found falls back to registered
      * {@link #DEFAULTS}.
+     *
+     * <h3>Registered Defaults</h3>
+     * Defaults may be registered in this way via <code>DEFAULTS.setProperty(String, Object)</code>
+     *
+     * For properties declared within this class {@link BaseConfig}, default values are already integrated into the
+     * Configuration object. Such a pattern may be useful elsewhere. i.e.
+     * Rather than passing them in on every invocation
+     * <pre>    $.getString("my.prop", "default val")</pre>
+     * make it work with registered defaults.
+     * <pre>    $.getString("my.prop")</pre>
      */
     public static final Configuration $ = new CompositeConfiguration(Arrays.asList(
             new SystemConfiguration(), // first check sys props
             DEFAULTS // fall back to coded defaults
     ));
+
 
     /**
      * Base package that will be scanned for instantiable components ({@link Path}, {@link Provider}, ...)
@@ -52,6 +67,9 @@ public class BaseConfig {
         DEFAULTS.setProperty(PROP_BASE_PKG, DEF_BASE_PKG);
     }
 
+    /**
+     * Adapater address to listen on. Default to {@value #DEF_JETTY_HOST} (accept all incoming connections).
+     */
     public static final String PROP_JETTY_HOST = "jetty.host";
     private static final String DEF_JETTY_HOST = "0.0.0.0";
     static {
@@ -60,7 +78,7 @@ public class BaseConfig {
 
     /**
      * Same as jetty property to use a custom port. Read by BasePackagesResourceConfig when starting embedded Jetty.
-     * Defaults to 8080.
+     * Defaults to {@value #DEF_JETTY_PORT}.
      */
     public static final String PROP_JETTY_PORT = "jetty.port";
     private static final int DEF_JETTY_PORT = 8080;
@@ -68,21 +86,13 @@ public class BaseConfig {
         DEFAULTS.setProperty(PROP_JETTY_PORT, DEF_JETTY_PORT);
     }
 
+    /**
+     * SSL port. Defaults to {@value #DEF_JETTY_PORT_SSL}.
+     */
     public static final String PROP_JETTY_PORT_SSL = "jetty.port.ssl";
     private static final int DEF_JETTY_PORT_SSL = 8443;
     static {
         DEFAULTS.setProperty(PROP_JETTY_PORT_SSL, DEF_JETTY_PORT_SSL);
-    }
-
-    /**
-     * A counter that when incremented (or changed at all) can trigger a jetty restart. Useful if the application was
-     * reconfigured on the fly and should be totally reinitialized. Note that certain other props also trigger jetty
-     * restarts. Defaults to a restart count of 0.
-     */
-    public static final String PROP_RESTART_TRIGGER = "jetty.restart";
-    private static final int DEF_RESTART_TRIGGER = 0;
-    static {
-        DEFAULTS.setProperty(PROP_RESTART_TRIGGER, DEF_RESTART_TRIGGER);
     }
 
     /**
@@ -161,11 +171,21 @@ public class BaseConfig {
     public static final String PROP_STATIC_DIRS = "base.static_dirs";
 
     /**
-     * Password of keystore, if attempting to use SSL. Defaults to "changeit".
+     * Password of keystore, if attempting to use SSL. Defaults to <code>{@value #DEF_KEYSTORE_PW}</code>.
      */
     public static final String PROP_KEYSTORE_PW = "base.keystore.password";
-    public static final String DEF_KEYSTORE_PW = "changeit";
+    private static final String DEF_KEYSTORE_PW = "changeit";
     static {
         DEFAULTS.setProperty(PROP_KEYSTORE_PW, DEF_KEYSTORE_PW);
+    }
+
+    /**
+     * Used by {@link RunServer} to set up {@link ServletContainer#PROPERTY_WEB_PAGE_CONTENT_REGEX}. Defaults to
+     * {@value #DEF_STATIC_CONTENT_REGEX}.
+     */
+    public static final String PROP_STATIC_CONTENT_REGEX = "";
+    private static final String DEF_STATIC_CONTENT_REGEX = ".*\\.(html|xml|css|js|gif|jpg|png|ico|eot|svg|ttf|woff|otf)";
+    static {
+        DEFAULTS.setProperty(PROP_STATIC_CONTENT_REGEX, DEF_STATIC_CONTENT_REGEX);
     }
 }

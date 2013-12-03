@@ -19,27 +19,30 @@ package com.blacklocus.webapp.base;
 
 import com.blacklocus.webapp.RunServer;
 import com.blacklocus.webapp.app.StartupListener;
-import com.blacklocus.webapp.app.scan.JerseyScannerHelper;
-import com.blacklocus.webapp.app.scan.ScannerHelper;
+import com.blacklocus.webapp.app.JerseyScannerHelper;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.api.core.PackagesResourceConfig;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle;
 
 import javax.ws.rs.ApplicationPath;
 
+import static com.blacklocus.webapp.base.BaseConfig.$;
+import static com.blacklocus.webapp.base.BaseConfig.PROP_BASE_PKG;
+
 /**
- * @author jason
+ * See {@link PackagesResourceConfig}
+ *
+ * @author Jason Dunkelberger (dirkraft)
  */
 @ApplicationPath("/*")
 public class BasePackagesResourceConfig extends PackagesResourceConfig {
 
     public BasePackagesResourceConfig(@InjectParam JerseyScannerHelper scannerHelper) {
-        this(scannerHelper, BaseConst.BASE_PKG == null ? "" : BaseConst.BASE_PKG);
+        this(scannerHelper, $.getString(PROP_BASE_PKG));
     }
 
-    public BasePackagesResourceConfig(final ScannerHelper scannerHelper, String... basePkgs) {
+    public BasePackagesResourceConfig(final JerseyScannerHelper scannerHelper, String... basePkgs) {
         super(combine(new String[] {
                 "org.codehaus.jackson.jaxrs" // json serialization
         }, basePkgs));
@@ -52,14 +55,6 @@ public class BasePackagesResourceConfig extends PackagesResourceConfig {
                 }
             }
         });
-        init();
-    }
-
-    /**
-     * Last thing called by any constructor in this class.
-     */
-    protected void init() {
-        ToStringBuilder.setDefaultStyle(BaseConst.DEFAULT_TO_STRING_STYLE);
     }
 
     protected static String[] combine(String pkg, String... moar) {

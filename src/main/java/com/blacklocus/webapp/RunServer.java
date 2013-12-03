@@ -23,7 +23,6 @@ import com.blacklocus.webapp.base.BasePackagesResourceConfig;
 import com.blacklocus.webapp.util.ExceptingRunnable;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.server.impl.resource.SingletonFactory;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
@@ -57,10 +56,12 @@ import static com.blacklocus.webapp.base.BaseConfig.PROP_JETTY_HOST;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_JETTY_PORT;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_JETTY_PORT_SSL;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_KEYSTORE_PW;
+import static com.blacklocus.webapp.base.BaseConfig.PROP_STATIC_CONTENT_REGEX;
 import static com.blacklocus.webapp.base.BaseConfig.PROP_STATIC_DIRS;
 
 /**
- * Sets up Jetty and Jersey with some sane defaults
+ * Sets up Jetty and Jersey with some sane defaults. This is the primary {@link #main(String[])} entry point that
+ * typically starts up a jersey-jump -based application.
  *
  * @author Jason Dunkelberger (dirkraft)
  */
@@ -87,73 +88,70 @@ public class RunServer extends ExceptingRunnable {
 
     @Override
     public void go() throws Exception {
-        while (!Thread.interrupted()) { // probably indicates shutdown
 
-            WebAppContext webApp = new WebAppContext();
-            // Effectively removes the "no-JSP support" warning, because we don't want dirty, stinkin' JSP support ever.
-            webApp.setDefaultsDescriptor("webdefault-nojsp.xml");
+        WebAppContext webApp = new WebAppContext();
+        // Effectively removes the "no-JSP support" warning, because we don't want dirty, stinkin' JSP support ever.
+        webApp.setDefaultsDescriptor("webdefault-nojsp.xml");
 
-            // Fixes serving static resources correctly. Without this, no charset is set in the Content-Type header and
-            // 'good' browsers do a terrible job at guessing. Does not affect Java resources, which must specify
-            // their own @Produces (usually by extending BaseJsonResource).
-            webApp.addFilter(new StaticResourceUTF8CharEncodingFilterHolder(), "/*", EnumSet.allOf(DispatcherType.class));
-
-
-            ////////////////////
-            // Prepare jersey
-
-            // as a filter-specifically because that can support falling back to static content when no java resource matches
-            FilterHolder jerseyFilter = new FilterHolder(ServletContainer.class);
-            jerseyFilter.setName(prcCls.getName());
-            jerseyFilter.setInitParameter(ServletContainer.APPLICATION_CONFIG_CLASS, prcCls.getCanonicalName());
-            jerseyFilter.setInitParameter(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, ".*\\.(html|xml|css|js|gif|jpg|png|ico|eot|svg|ttf|woff|otf)");
-            jerseyFilter.setInitParameter(ResourceConfig.PROPERTY_DEFAULT_RESOURCE_COMPONENT_PROVIDER_FACTORY_CLASS, SingletonFactory.class.getCanonicalName());
-            jerseyFilter.setInitParameter(ResourceConfig.FEATURE_DISABLE_WADL, "true");
-            jerseyFilter.setInitParameter(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
-
-            Map<String, String> addtionalInitParams = getAdditionalJerseyInitParameters();
-            for (Map.Entry<String, String> initParam : addtionalInitParams.entrySet()) {
-                // must iterate because jerseyFilter.setInitParameters replaces everything
-                jerseyFilter.setInitParameter(initParam.getKey(), initParam.getValue());
-            }
-
-            webApp.addFilter(jerseyFilter, "/*", EnumSet.allOf(DispatcherType.class));
+        // Fixes serving static resources correctly. Without this, no charset is set in the Content-Type header and
+        // 'good' browsers do a terrible job at guessing. Does not affect Java resources, which must specify
+        // their own @Produces (usually by extending BaseJsonResource).
+        webApp.addFilter(new StaticResourceUTF8CharEncodingFilterHolder(), "/*", EnumSet.allOf(DispatcherType.class));
 
 
-            ////////////////////////////////////////
-            // prepare static resources locations
+        ////////////////////
+        // Prepare jersey
 
-            final Resource staticResources;
-            String explicitStaticDirs = propSet.getString(PROP_STATIC_DIRS);
-            if (explicitStaticDirs == null) {
-                // Single static resource directory in the classpath:static/ folder.
-                //noinspection ConstantConditions
-                URL staticDir = prcCls.getClassLoader().getResource("static");
-                staticResources = staticDir == null ? Resource.newResource("") : Resource.newResource(staticDir.toExternalForm());
-            } else {
-                // Explicitly named static resource directories. There may be multiple. First match wins.
-                staticResources = new ResourceCollection(explicitStaticDirs.split(";"));
-            }
+        // as a filter-specifically because that can support falling back to static content when no java resource matches
+        FilterHolder jerseyFilter = new FilterHolder(ServletContainer.class);
+        jerseyFilter.setName(prcCls.getName());
+        jerseyFilter.setInitParameter(ServletContainer.APPLICATION_CONFIG_CLASS, prcCls.getCanonicalName());
+        jerseyFilter.setInitParameter(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, $.getString(PROP_STATIC_CONTENT_REGEX));
+        jerseyFilter.setInitParameter(ResourceConfig.FEATURE_DISABLE_WADL, "true");
+        jerseyFilter.setInitParameter(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
 
-            webApp.setBaseResource(staticResources);
-
-
-            ///////////////////////////////////
-            // initialize network listeners
-
-            SERVER = new Server(new InetSocketAddress(
-                    propSet.getString(PROP_JETTY_HOST),
-                    propSet.getInt(PROP_JETTY_PORT)
-            ));
-            SslSelectChannelConnector ssl = createSsl();
-            if (ssl != null) {
-                SERVER.addConnector(ssl);
-            }
-            SERVER.setHandler(webApp);
-            SERVER.start();
-            SERVER.join(); // blocks
-
+        Map<String, String> addtionalInitParams = getAdditionalJerseyInitParameters();
+        for (Map.Entry<String, String> initParam : addtionalInitParams.entrySet()) {
+            // must iterate because jerseyFilter.setInitParameters replaces everything
+            jerseyFilter.setInitParameter(initParam.getKey(), initParam.getValue());
         }
+
+        webApp.addFilter(jerseyFilter, "/*", EnumSet.allOf(DispatcherType.class));
+
+
+        ////////////////////////////////////////
+        // prepare static resources locations
+
+        final Resource staticResources;
+        String explicitStaticDirs = propSet.getString(PROP_STATIC_DIRS);
+        if (explicitStaticDirs == null) {
+            // Single static resource directory in the classpath:static/ folder.
+            //noinspection ConstantConditions
+            URL staticDir = prcCls.getClassLoader().getResource("static");
+            staticResources = staticDir == null ? Resource.newResource("") : Resource.newResource(staticDir.toExternalForm());
+        } else {
+            // Explicitly named static resource directories. There may be multiple. First match wins.
+            staticResources = new ResourceCollection(explicitStaticDirs.split(";"));
+        }
+
+        webApp.setBaseResource(staticResources);
+
+
+        ///////////////////////////////////
+        // initialize network listeners
+
+        SERVER = new Server(new InetSocketAddress(
+                propSet.getString(PROP_JETTY_HOST),
+                propSet.getInt(PROP_JETTY_PORT)
+        ));
+        SslSelectChannelConnector ssl = createSsl();
+        if (ssl != null) {
+            SERVER.addConnector(ssl);
+        }
+        SERVER.setHandler(webApp);
+        SERVER.start();
+        SERVER.join(); // blocks this thread
+
     }
 
     private SslSelectChannelConnector createSsl() throws IOException, KeyStoreException, CertificateException,
@@ -183,9 +181,9 @@ public class RunServer extends ExceptingRunnable {
     }
 
     /**
-     * Override to provide additional jersy initialization parameters
+     * Override to provide additional jersey initialization parameters
      */
-    protected Map<String,String> getAdditionalJerseyInitParameters() {
+    protected Map<String, String> getAdditionalJerseyInitParameters() {
         return Collections.emptyMap();
     }
 
