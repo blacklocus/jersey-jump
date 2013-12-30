@@ -46,6 +46,14 @@ dependencies {
 
 
 
+def defaultBlank(closure) {
+    try {
+        closure()
+    } catch (MissingPropertyException e) {
+        ''
+    }
+}
+
 /** Function always returns a new manifest that can be customized */
 def defaultManifest() {
     return manifest{
@@ -84,19 +92,21 @@ signing {
 }
 
 uploadArchives {
-    enabled = false // by default
     repositories.mavenDeployer {
         // only necessary for staging/release
         beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
 
-        repository(
-                // for snapshots
-                url: "https://oss.sonatype.org/content/repositories/snapshots/"
-                // for staging/release
-//                    url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-        ) {
-            authentication(userName: sonatypeUsername, password: sonatypePassword)
-        }
+            //# ./gradlew -PdeployUrl=http://server/artifactory/repo -PdeployUsername=admin -PdeployPassword=pass uploadArchives
+            repository(
+                    url: defaultBlank({ deployUrl })
+                    // for snapshots
+//                url: "https://oss.sonatype.org/content/repositories/snapshots/"
+                    // for staging/release
+//                url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            ) {
+                // If these are not defined assemble needlessly fails for unrelated tasks.
+                authentication(userName: defaultBlank({ deployUsername }), password: defaultBlank({ deployPassword }))
+            }
 
         pom.project {
             name 'jersey-jump'
