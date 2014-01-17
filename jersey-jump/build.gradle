@@ -1,0 +1,32 @@
+dependencies {
+
+    // server components
+    compile deps.jersey_server
+    compile deps.jersey_servlet
+    compile deps.jersey_core
+    compile deps.jersey_json
+
+    // embedded jetty libs
+    compile deps.jetty_server
+    compile deps.jetty_webapp
+
+    compile deps.jackson_core_asl
+    compile deps.jackson_mapper_asl
+
+    // utility components
+    compile deps.commons_lang
+    compile deps.commons_io
+    compile deps.commons_configuration
+    compile deps.guava
+
+    // logging components
+    compile deps.slf4j_api
+
+    // test components
+    testCompile deps.junit
+
+}
+
+uploadArchives {
+    enabled = true
+}

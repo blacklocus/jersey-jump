@@ -1,23 +1,12 @@
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'maven'
-
-repositories {
-    mavenCentral()
-    maven {
-        name = 'sonatype-snapshots'
-        url 'https://oss.sonatype.org/content/repositories/snapshots'
-    }
-}
-
 dependencies {
-    compile project(':')
 
-    compile 'org.apache.httpcomponents:httpclient:4.2.2'
+    compile project(':jersey-jump')
 
-    runtime 'org.slf4j:slf4j-simple:1.7.5'
+    compile deps.httpclient
 
-    testCompile 'junit:junit:4.11'
-    testCompile 'org.slf4j:slf4j-simple:1.7.5'
+    runtime deps.slf4j_simple
+
+    testCompile deps.junit
+    testCompile deps.slf4j_simple
 
 }

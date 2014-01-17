@@ -1,50 +1,18 @@
-group = 'com.blacklocus'
-version = '1.0.1-SNAPSHOT'
-
 apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Defines
 
-
-
-repositories {
-    mavenCentral()
+/** Function always returns a new manifest that can be customized */
+def defaultManifest() {
+    return manifest {
+        def git_cmd = "git rev-parse HEAD"
+        def git_proc = git_cmd.execute()
+        attributes 'SCM-Revision': git_proc.text.trim()
+        attributes 'Timestamp': String.valueOf(System.currentTimeMillis())
+        attributes 'Build-Host': InetAddress.localHost.hostName
+    }
 }
-
-dependencies {
-
-    // server components
-    compile 'com.sun.jersey:jersey-server:1.17.1'
-    compile 'com.sun.jersey:jersey-servlet:1.17.1'
-    compile 'com.sun.jersey:jersey-core:1.17.1'
-    compile 'com.sun.jersey:jersey-json:1.17.1'
-
-    // embedded jetty libs
-    compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106'
-    compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106'
-
-    compile 'org.codehaus.jackson:jackson-core-asl:1.9.12'
-    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.12'
-
-    // utility components
-    compile 'commons-lang:commons-lang:2.6'
-    compile 'commons-io:commons-io:2.4'
-    compile 'commons-configuration:commons-configuration:1.9'
-    compile 'com.google.guava:guava:14.0.1'
-
-    // logging components
-    compile 'org.slf4j:slf4j-api:1.7.5'
-
-    // test components
-    testCompile 'junit:junit:4.11'
-
-}
-
-
 
 def defaultBlank(closure) {
     try {
@@ -54,87 +22,162 @@ def defaultBlank(closure) {
     }
 }
 
-/** Function always returns a new manifest that can be customized */
-def defaultManifest() {
-    return manifest{
-        def git_cmd = "git rev-parse HEAD"
-        def git_proc = git_cmd.execute()
-        attributes 'SCM-Revision': git_proc.text.trim()
-        attributes 'Timestamp': String.valueOf(System.currentTimeMillis())
-        attributes 'Build-Host': InetAddress.localHost.hostName
+ext {
+    deps = [
+
+            commons_configuration: 'commons-configuration:commons-configuration:1.9',
+            commons_io: 'commons-io:commons-io:2.4',
+            commons_lang: 'commons-lang:commons-lang:2.6',
+            guava: 'com.google.guava:guava:15.0',
+            httpclient: 'org.apache.httpcomponents:httpclient:4.2.2',
+            jackson_core_asl: 'org.codehaus.jackson:jackson-core-asl:1.9.12',
+            jackson_mapper_asl: 'org.codehaus.jackson:jackson-mapper-asl:1.9.12',
+            jersey_core: 'com.sun.jersey:jersey-core:1.17.1',
+            jersey_json: 'com.sun.jersey:jersey-json:1.17.1',
+            jersey_server: 'com.sun.jersey:jersey-server:1.17.1',
+            jersey_servlet: 'com.sun.jersey:jersey-servlet:1.17.1',
+            jetty_server: 'org.eclipse.jetty:jetty-server:8.1.8.v20121106',
+            jetty_webapp: 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106',
+            junit: 'junit:junit:4.11',
+            slf4j_api: 'org.slf4j:slf4j-api:1.7.5',
+            slf4j_simple: 'org.slf4j:slf4j-simple:1.7.5',
+
+    ]
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// License
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.5.0'
+    }
+}
+allprojects {
+    apply plugin: 'license'
+
+    license {
+        header rootProject.file('src/license/HEADER')
     }
 }
 
-jar {
-    manifest = defaultManifest()
-}
+subprojects {
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-    manifest = defaultManifest()
-}
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Identifiers
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-    manifest = defaultManifest()
-}
+    group = 'com.blacklocus'
+    version = '1.0.1'
+    ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-artifacts {
-    archives jar
-    archives javadocJar
-    archives sourcesJar
-}
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Plugins
 
-signing {
-    sign configurations.archives
-}
+    apply plugin: 'java'
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
 
-uploadArchives {
-    repositories.mavenDeployer {
-        // only necessary for staging/release
-        beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+    apply plugin: 'idea'
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Dependencies
+
+    repositories {
+        mavenCentral()
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Artifacts
+
+    jar {
+        manifest = defaultManifest()
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from 'build/docs/javadoc'
+        manifest = defaultManifest()
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+        manifest = defaultManifest()
+    }
+
+    artifacts {
+        archives jar
+        archives javadocJar
+        archives sourcesJar
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Publishing
+
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        dependsOn licenseFormatMain, licenseFormatTest
+        enabled = false // by default
+
+        repositories.mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             //# ./gradlew -PdeployUrl=http://server/artifactory/repo -PdeployUsername=admin -PdeployPassword=pass uploadArchives
+            // for snapshots https://oss.sonatype.org/content/repositories/snapshots
+            // for staging/release https://oss.sonatype.org/service/local/staging/deploy/maven2
             repository(
                     url: defaultBlank({ deployUrl })
-                    // for snapshots
-//                url: "https://oss.sonatype.org/content/repositories/snapshots/"
-                    // for staging/release
-//                url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             ) {
-                // If these are not defined assemble needlessly fails for unrelated tasks.
+                // If these are not defined assemble needlessly fails for unrelated tasks, hence, defaultBlank.
                 authentication(userName: defaultBlank({ deployUsername }), password: defaultBlank({ deployPassword }))
             }
 
-        pom.project {
-            name 'jersey-jump'
-            description "Let's see what this becomes."
-            url 'https://github.com/blacklocus/jersey-jump'
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
+            pom.project {
+                name 'jersey-jump'
+                description 'Jersey 1.x jump starter. Stop wasting time on your web application and start working on your web application.'
+                url 'https://github.com/blacklocus/jersey-jump'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
                 }
-            }
-            scm {
-                url 'scm:https://github.com/blacklocus/jersey-jump.git'
-                connection 'scm:git://github.com/blacklocus/jersey-jump.git'
-                developerConnection 'scm:git@github.com:blacklocus/jersey-jump.git'
-            }
-            developers {
-                developer {
-                    id 'dirkraft'
-                    name 'Jason Dunkelberger'
+                scm {
+                    url 'scm:https://github.com/blacklocus/jersey-jump.git'
+                    connection 'scm:git://github.com/blacklocus/jersey-jump.git'
+                    developerConnection 'scm:git@github.com:blacklocus/jersey-jump.git'
+                }
+                developers {
+                    developer {
+                        id 'dirkraft'
+                        name 'Jason Dunkelberger'
+                    }
                 }
             }
         }
     }
 }
 
-// Generate wrapper, which is distributed as part of source to alleviate the need of installing gradle
-task createWrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.10'
+}
+
+idea {
+    project {
+        languageLevel = '1.6'
+    }
 }
