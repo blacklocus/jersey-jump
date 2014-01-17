@@ -183,7 +183,7 @@ public class BaseConfig {
      * Used by {@link RunServer} to set up {@link ServletContainer#PROPERTY_WEB_PAGE_CONTENT_REGEX}. Defaults to
      * {@value #DEF_STATIC_CONTENT_REGEX}.
      */
-    public static final String PROP_STATIC_CONTENT_REGEX = "";
+    public static final String PROP_STATIC_CONTENT_REGEX = ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX;
     private static final String DEF_STATIC_CONTENT_REGEX = ".*\\.(html|xml|css|js|gif|jpg|png|ico|eot|svg|ttf|woff|otf)";
     static {
         DEFAULTS.setProperty(PROP_STATIC_CONTENT_REGEX, DEF_STATIC_CONTENT_REGEX);
