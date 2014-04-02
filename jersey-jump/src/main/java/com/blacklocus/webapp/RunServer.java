@@ -15,6 +15,7 @@
  */
 package com.blacklocus.webapp;
 
+import com.blacklocus.webapp.app.AccessControlAllowOriginAllContainerResponseFilter;
 import com.blacklocus.webapp.app.StaticResourceUTF8CharEncodingFilterHolder;
 import com.blacklocus.webapp.base.BaseConfig;
 import com.blacklocus.webapp.base.BasePackagesResourceConfig;
@@ -106,8 +107,11 @@ public class RunServer extends ExceptingRunnable {
         jerseyFilter.setName(prcCls.getName());
         jerseyFilter.setInitParameter(ServletContainer.APPLICATION_CONFIG_CLASS, prcCls.getCanonicalName());
         jerseyFilter.setInitParameter(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, $.getString(PROP_STATIC_CONTENT_REGEX));
-        jerseyFilter.setInitParameter(ResourceConfig.PROPERTY_DEFAULT_RESOURCE_COMPONENT_PROVIDER_FACTORY_CLASS, SingletonFactory.class.getCanonicalName());
+        jerseyFilter.setInitParameter(ResourceConfig.PROPERTY_DEFAULT_RESOURCE_COMPONENT_PROVIDER_FACTORY_CLASS,
+                SingletonFactory.class.getCanonicalName());
         jerseyFilter.setInitParameter(ResourceConfig.FEATURE_DISABLE_WADL, "true");
+        jerseyFilter.setInitParameter(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS,
+                AccessControlAllowOriginAllContainerResponseFilter.class.getCanonicalName());
         jerseyFilter.setInitParameter(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
 
         Map<String, String> addtionalInitParams = getAdditionalJerseyInitParameters();
